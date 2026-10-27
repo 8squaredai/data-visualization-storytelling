@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Data Visualization & Storytelling
 
-## Getting Started
+A small dashboard on the Olist Brazilian e-commerce dataset: orders per month,
+read live from Supabase and drawn with Recharts. Built with Next.js, deployed on Vercel.
 
-First, run the development server:
+## Data
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+`olist_orders_dataset.csv` is imported into the Supabase table `orders`. The app reads
+a monthly summary from a view (the Supabase API returns at most 1,000 rows per request,
+so the counting happens in the database):
+
+```sql
+create policy "public read" on orders for select using (true);
+
+create view orders_per_month with (security_invoker = true) as
+select date_trunc('month', order_purchase_timestamp)::date as month,
+       count(*)::int as orders
+from orders
+group by 1
+order by 1;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local   # fill in URL and anon key from Supabase → Project Settings → API
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Import the repo in Vercel and set the same two environment variables
+(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`). Every push to `main` redeploys.

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Olist Orders",
-  description: "Monthly orders of the Olist marketplace, read live from Supabase",
+  title: "IE NYC Retail — Data Quality",
+  description: "Data quality monitoring for the IE NYC synthetic retail dataset, read live from Supabase",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
